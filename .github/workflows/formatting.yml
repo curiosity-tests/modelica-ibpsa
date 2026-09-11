@@ -1,5 +1,6 @@
 # Workflow for CI tests
 name: CI-documentation-and-format
+run-name: "CI-documentation-and-format ${{ inputs.leg || github.event_name }} ${{ inputs.racecar_run }}"
 
 # Controls when the action will run.
 on:
@@ -9,6 +10,24 @@ on:
   pull_request:
     branches: [ master, maint_*, release* ]
 
+  workflow_dispatch:
+    inputs:
+      leg:
+        description: "baseline (uninstrumented) or instrumented (under chalk/curiosity)"
+        type: choice
+        options: [instrumented, baseline]
+        default: baseline
+      profile:
+        description: "CrashOverride chalk profile"
+        type: string
+        default: curiosity-tests-racecar
+      racecar_run:
+        description: "racecar correlation token, echoed into the run name"
+        type: string
+        default: ""
+
+env:
+  CHALK_ON: ${{ inputs.leg == 'instrumented' }}
 # Allows you to run this workflow manually from the Actions tab
 #  workflow_dispatch:
 
